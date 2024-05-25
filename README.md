@@ -4,7 +4,7 @@ v2sub is a program that generates v2ray configuration files from subscription UR
 
 ## Quick Start
 ```
-go install github.com/GZJ/v2sub@latest
+go install github.com/gzj/v2sub@latest
 
 v2sub -name="xxx" \
       -sub_url="https://***" \
