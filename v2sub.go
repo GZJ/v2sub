@@ -21,7 +21,7 @@ type Vmess struct {
 	Port string `json:"port"`
 	Add  string `json:"add"`
 	Id   string `json:"id"`
-	Aid  string `json:"aid"`
+	Aid  int `json:"aid"`
 	net  string `json:"net"`
 	Type string `json:"type"`
 	Tls  string `json:"tls"`
