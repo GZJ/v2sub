@@ -36,9 +36,8 @@ func main() {
 	outputText := tview.NewTextView().
 		SetDynamicColors(true).
 		SetRegions(true).
-		SetChangedFunc(func() {
-			app.Draw()
-		})
+		SetMaxLines(1000).
+        ScrollToEnd()
 
 	flex := tview.NewFlex().
 		AddItem(list, 0, 1, true).
@@ -81,7 +80,7 @@ func main() {
 				}
 				go func() {
 					cmd.Wait()
-					fmt.Fprintln(outputText, "Command execution completed.")
+					fmt.Fprintln(outputText, "------------------------------------------------------------")
 				}()
 			}
 		}
