@@ -37,10 +37,10 @@ func main() {
 	)
 
 	flag.StringVar(&name, "name", "", "Name of the subscription address.")
-	flag.StringVar(&subUrl, "sub_url", "", "URL of the subscription address.")
-	flag.StringVar(&proxyPath, "proxy_path", "", "Path to the proxy for accessing the subscription address.")
-	flag.StringVar(&tmplFile, "tmpl_file", "config.tmpl", "Path to the template file.")
-	flag.StringVar(&configOutputPath, "config_output_path", ".", "Base path for generated configuration files.")
+	flag.StringVar(&subUrl, "sub-url", "", "URL of the subscription address.")
+	flag.StringVar(&proxyPath, "proxy-path", "", "Path to the proxy for accessing the subscription address.")
+	flag.StringVar(&tmplFile, "tmpl-file", "config.tmpl", "Path to the template file.")
+	flag.StringVar(&configOutputPath, "config-output-path", ".", "Base path for generated configuration files.")
 	flag.Parse()
 
 	enableProxy(proxyPath)
