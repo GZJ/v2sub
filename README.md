@@ -2,6 +2,8 @@
 
 v2sub is a program that generates v2ray configuration files from subscription URL.
 
+v2meu is an add-on tool for selecting and starting v2ray.
+
 ## Quick Start
 ```
 v2sub -name="xxx" \
