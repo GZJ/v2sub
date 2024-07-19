@@ -37,7 +37,7 @@ func main() {
 		SetDynamicColors(true).
 		SetRegions(true).
 		SetMaxLines(1000).
-        ScrollToEnd()
+		ScrollToEnd()
 
 	flex := tview.NewFlex().
 		AddItem(list, 0, 1, true).
