@@ -39,6 +39,10 @@ func main() {
 		SetMaxLines(1000).
 		ScrollToEnd()
 
+	outputText.SetChangedFunc(func() {
+		app.Draw()
+	})
+
 	flex := tview.NewFlex().
 		AddItem(list, 0, 1, true).
 		AddItem(outputText, 0, 2, false)
@@ -80,7 +84,9 @@ func main() {
 				}
 				go func() {
 					cmd.Wait()
-					fmt.Fprintln(outputText, "------------------------------------------------------------")
+					app.QueueUpdateDraw(func() {
+						fmt.Fprintln(outputText, "------------------------------------------------------------")
+					})
 				}()
 			}
 		}
