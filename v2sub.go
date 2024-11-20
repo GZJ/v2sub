@@ -56,6 +56,7 @@ func enableProxy(proxyPath string) {
 		http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyUrl)}
 		log.Println("Proxy is enabled.")
 	} else {
+		http.DefaultTransport = &http.Transport{Proxy: nil} 
 		log.Println("Proxy is not enabled.")
 	}
 }
