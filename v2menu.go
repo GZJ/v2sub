@@ -21,7 +21,7 @@ func main() {
 	runArgsTemplate := flag.String("run-args", "--config=%s", "Arguments template for the run command")
 	flag.Parse()
 
-	app := tview.NewApplication()
+	app := tview.NewApplication().EnableMouse(true)
 
 	files, err := getJSONFiles(*dir)
 	if err != nil {
@@ -49,6 +49,62 @@ func main() {
 
 	var cmdMutex sync.Mutex
 
+	executeCommand := func(fileName string) {
+		cmdMutex.Lock()
+		defer cmdMutex.Unlock()
+
+		stopArgsSplit := strings.Split(*stopArgs, " ")
+		cmd := exec.Command(*stopCmd, stopArgsSplit...)
+		_, err := cmd.Output()
+		if err != nil {
+			fmt.Fprintf(outputText, "%s ", err)
+		}
+
+		runArgs := fmt.Sprintf(*runArgsTemplate, fileName)
+		runArgsSplit := strings.Split(runArgs, " ")
+		cmd = exec.Command(*runCmd, runArgsSplit...)
+		cmd.Stdout = outputText
+		cmd.Stderr = outputText
+		err = cmd.Start()
+		if err != nil {
+			fmt.Fprintf(outputText, "%s ", err)
+		}
+		go func() {
+			cmd.Wait()
+			app.QueueUpdateDraw(func() {
+				fmt.Fprintln(outputText, "------------------------------------------------------------")
+			})
+		}()
+	}
+
+	list.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+		if action == tview.MouseLeftClick {
+			x, y := event.Position()
+			rectX, rectY, _, _ := list.GetRect()
+			if x >= rectX && y >= rectY {
+				clickedIndex := y - rectY
+				if clickedIndex >= 0 && clickedIndex < len(files) {
+					list.SetCurrentItem(clickedIndex)
+				}
+			}
+		} else if action == tview.MouseLeftDoubleClick {
+			x, y := event.Position()
+			rectX, rectY, _, _ := list.GetRect()
+			if x >= rectX && y >= rectY {
+				clickedIndex := y - rectY
+				if clickedIndex >= 0 && clickedIndex < len(files) {
+					list.SetCurrentItem(clickedIndex)
+					fileName := files[clickedIndex]
+					executeCommand(fileName)
+				}
+			}
+		}
+		return action, event
+	})
+
+	list.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+	})
+
 	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyRune {
 			switch event.Rune() {
@@ -63,31 +119,7 @@ func main() {
 			selectedItem := list.GetCurrentItem()
 			if selectedItem >= 0 && selectedItem < len(files) {
 				fileName := files[selectedItem]
-				cmdMutex.Lock()
-				defer cmdMutex.Unlock()
-
-				stopArgsSplit := strings.Split(*stopArgs, " ")
-				cmd := exec.Command(*stopCmd, stopArgsSplit...)
-				_, err := cmd.Output()
-				if err != nil {
-					fmt.Fprintf(outputText, "%s ", err)
-				}
-
-				runArgs := fmt.Sprintf(*runArgsTemplate, fileName)
-				runArgsSplit := strings.Split(runArgs, " ")
-				cmd = exec.Command(*runCmd, runArgsSplit...)
-				cmd.Stdout = outputText
-				cmd.Stderr = outputText
-				err = cmd.Start()
-				if err != nil {
-					fmt.Fprintf(outputText, "%s ", err)
-				}
-				go func() {
-					cmd.Wait()
-					app.QueueUpdateDraw(func() {
-						fmt.Fprintln(outputText, "------------------------------------------------------------")
-					})
-				}()
+				executeCommand(fileName)
 			}
 		}
 		return event
